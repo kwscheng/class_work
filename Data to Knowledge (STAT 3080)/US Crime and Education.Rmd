@@ -1,0 +1,88 @@
+---
+title: "Educational Attainment and Crime in the U.S Population" 
+author: "Kyle Cheng"
+fontsize: 12pt
+geometry: margin=1in
+urlcolor: black
+output: pdf_document
+header-includes:
+- \usepackage{setspace}
+- \onehalfspacing
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, highlight=FALSE)
+library(tidyverse)
+```
+```{r, echo = FALSE}
+set.seed("05192000")
+setwd("/Users/kwscheng/Documents/School/3RD YEAR FALL/STAT 3080")
+crime <- read.csv("USCrime.csv", header = TRUE)
+crime <- crime[1:20,1:27]
+finHigh <-crime$High.4+crime$College.1.3+crime$College.4
+crime <- cbind(crime,finHigh)
+edu <- crime[,c(1,21:27)]
+elementary <- (edu$Elementary.0.4+edu$Elementary.5.8)/edu$Population.25
+highschool <- (edu$High.1.3+edu$High.4)/edu$Population.25
+college <- (edu$College.1.3+edu$College.4)/edu$Population.25
+year <- rep(crime$Year,3)
+edu_categ <- data.frame(Year = year , edu =c(elementary,highschool,college), 
+                        group = c(rep("elementary",20),rep("highschool",20),
+                                  rep("college",20)))
+```
+
+## Is there a relationship between educational attainment and violent crime in the U.S population?
+
+  The above question will be explored through statistical testing on the crime and education dataset. The contents of this 20x28 dataset go into great detail. It was created by binding together two separate government data tables that were then modified to improve readability and relevance. The original tables were titled and located as listed below: 
+
+ + Table 1. "*Crime in the United States, by Volume and Rate per 100,000 Inhabitants, 1997–2016*" from the <https://ucr.fbi.gov> ^1^ website 
+ 
+ + Table 2. "*Years of School Completed by People 25 years and Over, by Age and Sex: Selected years 1940 to 2019*" from the <https://census.gov> ^2^ website
+ 
+ For each year between 1997 and 2016, volumes and rates for 9 categories of crime, along with 8 classifications of educational attainment are described. This level of detail, along with the ample sample size and careful data collection methodology, allows for robust comparison of education and violent crime rates. We will define educational attainment as the percentage of the above 25 American population having some form of college education. All variables are numerical and continuous. 
+ 
+### Hypothesis testing on the statistical significance of Pearson's correlation coefficient
+ 
+ In order to determine the existence of a relationship between educational attainment and crime rates, we will be conducting hypothesis testing on the significance of Pearson's correlation coefficient. Our null hypothesis will be that the correlation coefficient is not significantly different from 0. The alternate hypothesis will state the opposite, that the correlation coefficient is significantly different from zero. The level of significance (alpha) will be set at .05. 
+ 
+ In order to correctly test the statistical significance of the correlation coefficient, several assumptions must hold true ^3^
+  
+  1. Level of measurement: For a Pearson correlation, both variables should be continuous  
+    - Crime and college education rates are continuous variables on the 0.0-1.0 scale
+    
+  2. Related pairs: Each observation should have a pair of values  
+    - Both variables are tied together through year
+    
+  3. Absence of outliers: An outlier is "defined as a value that is 3.29 standard deviations" away from the mean. ^3^  
+    - All values are within this definition
+    
+```{r warning=FALSE, , message=FALSE, paged.print=TRUE, tidy=TRUE}
+    summary(crime$Violent.rate)
+    sd(crime$Violent.rate)*3.29 
+    summary(college)
+    sd(college)*3.29 
+    ```
+### Generalization 
+ 
+  The results of our statistical significance test on the Pearson correlation coefficient will generalize well to the population our dataset samples: True violent crime rates and educational attainment in the American population 25 years and older. The data was collected for government purposes, with specific measures to produce a sample representative of the overall U.S. population.
+  
+### Testing  
+```{r}
+cor.test(college, crime$Violent.rate, method = "pearson")$estimate
+cor.test(college, crime$Violent.rate, method = "pearson")$p.value
+```
+ 
+### Conclusion 
+ 
+ Our Pearson correlation coefficient has a value of -.9611, with a p-value of 1.672*10^-11^. As our p-value is less than the significance level of .05, we have sufficient evidence to reject the null hypothesis. Our correlation coefficient is significantly different from zero.    
+  We conclude that from 1997-2016, there is a negative linear relationship between the sampled rates of violent crime per 100,000 Americans and college education amongst Americans older than 25. This can be generalized to the population of all violent crime and educational attainment in the U.S during this period. 
+  
+\newpage
+## References
+ 
+^[1]^: <https://ucr.fbi.gov/crime-in-the-u.s/2016/crime-in-the-u.s.-2016/tables/table-1/table-1.xls#overview>
+
+^[2]^: <https://www.census.gov/data/tables/time-series/demo/educational-attainment/cps-historical-time-series.html>
+ 
+ ^3^: <https://www.researchgate.net/post/What-is-the-distribution-assumption-for-Pearson-correlation-coefficient#:~:text=The%20assumptions%20for%20Pearson%20correlation,each%20variable%20should%20be%20continuous>
+ 
