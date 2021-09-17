@@ -1,0 +1,11 @@
+{% for u in user_list %}
+    {% if u == user %}
+    <tr class="table-warning">
+    {% else %}
+    <tr>
+    {% endif %}
+      <th class="text-center" scope="row">{{ forloop.counter }}</th>
+      <td><a href="{% url 'exercise_app:user_profile' u.pk %}">{{ u.user.first_name}} {{ u.user.last_name }}</a></td>
+      <td class="text-center">{{u.points}}</td>
+    </tr>
+{% endfor %}

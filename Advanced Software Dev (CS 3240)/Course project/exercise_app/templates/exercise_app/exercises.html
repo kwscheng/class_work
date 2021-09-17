@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Exercises</title>
+{% endblock title %}
+
+{% block header %}
+<div class="row">
+  <h1>Exercises</h1>
+</div>
+<div class="row">
+ <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#logModal">
+  Log exercise
+  </button>
+</div>
+{% endblock header %}
+
+{% block content %}
+<!-- Lists all the exercises -->
+<!-- AJAX source: https://simpleisbetterthancomplex.com/tutorial/2016/08/29/how-to-work-with-ajax-request-with-django.html -->
+<!-- https://getbootstrap.com/docs/4.0/components/modal/ -->
+<div class="modal fade" id="logModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="logModalTitle">Log Exercise</h5>
+        <button type="button" class="close" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="exercise">Exercise</label>
+          <select name="exercise" id="exercise-select" class="form-control">
+          {% for e in exercise_list %}
+            <option value={{e.name}}>{{e.name}}</option>
+          {% endfor %}
+        </select>
+        </div>
+        <div id="modal-exercise-form">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filler until we actully have exercise information: -->
+{% for exercise in user_exercise_list %}
+<div class="row">
+  <div class="col">
+    <div class="card mb-2" id="{{ exercise.name }}">
+      <div class="card-header">
+        <h5 class="mb-0">
+          <button class="btn btn-link" data-toggle="collapse" data-target="#{{ exercise.name }}-collapse">
+            {{ exercise.name }}
+          </button>
+        </h5>
+      </div>
+      
+      <div id="{{ exercise.name }}-collapse" class="collapse">
+        <div class="card-body">
+          {% include 'exercise_app/exercise_table.html' %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% endblock content %}
+
+{% block js %}
+<script>
+  $( updateForm );
+
+  $(".card").click(function() {
+    $(this).find(".card-body").html('').load("{% url 'exercise_app:get_exercise_table' %}?exercise=" + this.id);
+  });
+
+  $("#exercise-select").click( updateForm );
+
+  function updateForm() {
+    var exercise = $('#exercise-select option:selected').val();
+    $.ajax({
+      url: "{% url 'exercise_app:get_exercise_info' %}",
+      type: 'GET',
+      data: {
+        'exercise': exercise
+      },
+      dataType: 'json',
+      success: function (data) {
+        if (data.exerciseType == 'CA') {
+          $('#modal-exercise-form').html('').load("{% url 'exercise_app:log_cardio_exercise' 0 %}".replace('0', data.exercisePK));
+        } else if (data.exerciseType == 'WL') {
+          $('#modal-exercise-form').html('').load("{% url 'exercise_app:log_weightlifting_exercise' 0 %}".replace('0', data.exercisePK));
+        } else {
+          $('#modal-exercise-form').html('').load("{% url 'exercise_app:log_custom_exercise' 0 %}".replace('0', data.exercisePK));
+        }
+      }
+    });
+  }
+</script>
+{% endblock js %}

@@ -1,0 +1,159 @@
+
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+<title>Profile</title>
+{% endblock title %}
+
+{% block style %}
+<style type="text/css">
+h2 {text-align: center; padding-top: 8%;}
+html, body, #map {
+  width: 100%;
+  height: 50%;
+  margin: 0;
+  padding: 0;
+}
+</style>
+{% endblock style %}
+
+{% block content %}
+
+<h1> <b> HOOS FIT </b></h1>
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+      <h2><b>Save your favorite workout location below: </b></h2>
+
+      <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyAFbKvcUFbRtz7jLDwvPcd-En1fYc_jWQQ"></script>
+
+      <form action="{% url 'exercise_app:save_location' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="exampleFormControlInput1">Location Address</label>
+          <input type="info" class="form-control" name="accommodation_address" id="accommodation_address" value="{{ currentUser.location }}" >
+        </div>
+        <input type="submit" value="Update workout location" class="btn btn-primary btn-block" >
+      </form>
+      <div id="map"> </div>
+      
+
+      <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFbKvcUFbRtz7jLDwvPcd-En1fYc_jWQQ&libraries=places&callback=myMap"></script> -->
+
+    </div>
+    <div class="col-sm">
+      <h2>Update Your Information</h2> <br>
+      <form action="{% url 'exercise_app:update' %}" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+          <div class="form-group">
+            <label for="exampleFormControlInput1">First Name</label>
+            <input type="text" class="form-control" name="first" id="first" value="{{ user.first_name }}" required>
+          </div>   
+          <div class="form-group">
+            <label for="exampleFormControlInput1">Last Name</label>
+            <input type="text" class="form-control" name="last" id="last" value="{{ user.last_name }}" required>
+          </div>   
+          <div class="form-group">
+            <label for="exampleFormControlInput1">Age</label>
+            <input type="number" class="form-control" name="age" id="age" value="{{currentUser.age}}" required>
+          </div>
+          <div class="form-group">
+            <div class="row">
+              <div class = "col">
+                <label for="exampleFormControlInput1">Height (ft)</label>
+                <input type="number" class="form-control" name="height-ft" id="height-ft" value="{{feet}}" required>
+              </div>
+              <div class = "col">
+                <label for="exampleFormControlInput2">Height (in)</label>
+                <input type="number" class="form-control" name="height-inch" id="height-inch" value="{{inch}}" required>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="exampleFormControlInput1">Weight (lbs)</label>
+            <input type="number" class="form-control" name="weight" id="weight" value={{currentUser.weight}}>
+          </div> 
+          
+          <input type="submit" value="Update" class="btn btn-info btn-block" >
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+
+{% block js %}
+<script>
+
+
+  new google.maps.places.Autocomplete(
+  document.getElementById("autocomplete")
+  )
+
+
+  function initializeMap(){
+              var userLoc = document.getElementById('accommodation_address').value;
+              console.log(userLoc);
+              
+              var startReq = {
+                query: userLoc,
+                fields: ['geometry']};
+
+              //var startLoc = start.getPlace().geometry.LatLng;
+              var LatLng = {lat: 38.0336, lng: -78.5080};
+              var mapOptions = {
+                  center: LatLng,
+                  zoom: 12,
+                  scrollwheel:false,
+                  noClear: true
+              }
+      
+              var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+              
+              var locService =new google.maps.places.PlacesService(map);
+
+              var marker = new google.maps.Marker({
+                      position: LatLng,
+                      map: map,
+                      draggable: true,
+                      title: "Binko"
+              });
+
+              locService.findPlaceFromQuery(startReq, function(results, status) {
+                if(status === google.maps.places.PlacesServiceStatus.OK) {
+                  marker.position = results[0].geometry.location;
+                }
+                map.setCenter(results[0].geometry.location);
+                map.setZoom(17);
+              });
+            
+      
+              var input = document.getElementById('accommodation_address');
+              var autocomplete = new google.maps.places.Autocomplete(input);
+              autocomplete.bindTo('bounds',map);
+      
+              google.maps.event.addListener(autocomplete, 'place_changed',function(){
+                  var place=autocomplete.getPlace();
+                  if (!place.geometry){
+                      return;
+                  }
+                  if (place.geometry.viewport) {
+                      map.fitBounds(place.geometry.viewport);
+                  } else {
+                      map.setCenter(place.geometry.location);
+                      map.setZoom(17);
+                  }
+      
+                  marker.setPlace( ({
+                      placeId: place.place_id,
+                      location: place.geometry.location
+                  }));
+              });
+          };
+      
+          google.maps.event.addDomListener(window, 'load', initializeMap);
+</script> 
+{% endblock js %}

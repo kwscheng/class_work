@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Friends</title>
+{% endblock title %}
+
+
+{% block header %}
+<div class="row">
+	<h1>Friends</h1>
+</div>
+{% endblock header %}
+
+{% block content %}
+{# begin incoming friend requests #}
+{% csrf_token %}
+{% if pending_list %}
+<div class="row">
+  <h4>Pending Requests</h4>
+  <table class="table bg-white">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Email</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody id="pending-table">
+      {% for r in pending_list %}
+      <tr>
+        <td>{{ r.from_user.user.first_name }} {{ r.from_user.user.last_name }}</td>
+        <td>{{ r.from_user.user.email }}</td>
+        <td>
+          <button id="{{ r.from_user.pk }}" type="button" class="accept-button btn btn-success">Accept</button>
+          <button id="{{ r.from_user.pk }}" type="button" class="reject-button btn btn-danger">Reject</button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{# begin outgoing friend requests #}
+{% if sent_list %}
+<div class="row">
+  <h4>Sent Requests</h4>
+  <table class="table bg-white">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Email</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in sent_list %}
+      <tr class="sent-entry" id="{{ r.to_user.pk }}">
+        <td>{{ r.to_user.user.first_name }} {{ r.to_user.user.last_name }}</td>
+        <td>{{ r.to_user.user.email }}</td>
+        <td><button id="{{ r.to_user.pk }}" type="button" class="cancel-button btn btn-outline-danger">Cancel</button></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{# begin friends list #}
+{% if friend_list %}
+<div class="row">
+  <table class="table bg-white">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in friend_list %}
+      <tr>
+        <td><a href="{% url 'exercise_app:user_profile' f.pk %}">{{ f.user.first_name}} {{ f.user.last_name }}</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="row">
+  <p>You don't have any friends :(</p>
+</div>
+{% endif %}
+{% endblock content %}
+
+{% block js %}
+<script>
+  var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+  $('.cancel-button').click(function() {
+		// cancel friend request
+    var id = $(this).attr('id');
+		$.ajax({
+			url: "{% url 'exercise_app:friend_request_action' %}",
+			type: 'POST',
+      headers: {
+        'X-CSRFToken': csrftoken
+      },
+			data: {
+				'action': 'CA',
+				'other_user_pk': id,
+			}
+		}).done(function() {
+      location.reload()
+    });
+	});
+
+	$('.accept-button').click(function() {
+		// accept friend request
+    var id = $(this).attr('id');
+		$.ajax({
+			url: "{% url 'exercise_app:friend_request_action' %}",
+			type: 'POST',
+      headers: {
+        'X-CSRFToken': csrftoken
+      },
+			data: {
+				'action': 'AC',
+				'other_user_pk': id,
+			}
+		}).done(function() {
+      location.reload()
+    });
+    
+	});
+
+	$('.reject-button').click(function() {
+		// reject friend request
+    var id = $(this).attr('id');
+		$.ajax({
+			url: "{% url 'exercise_app:friend_request_action' %}",
+			type: 'POST',
+      headers: {
+        'X-CSRFToken': csrftoken
+      },
+			data: {
+				'action': 'RE',
+				'other_user_pk': id,
+			}
+		}).done(function() {
+      location.reload()
+    });
+	});
+</script>
+{% endblock js %}

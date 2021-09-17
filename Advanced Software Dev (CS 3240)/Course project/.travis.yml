@@ -1,0 +1,23 @@
+language: python
+python:
+- '3.8'
+cache: pip
+install:
+- pip install -r requirements-travis.txt
+services:
+- post
+- postgresql
+before_script:
+- export DJANGO_SETTINGS_MODULE=projectb28.travis_settings
+- psql -c 'create database travis_ci_test;' -U postgres
+script:
+- python manage.py migrate
+- python manage.py test
+deploy:
+  provider: heroku
+  api_key:
+    secure: DNrmT+eOoF3ZhJ6z7JMEeuwy1TxroWwUY6u0CGQ7dqXn6h83RFTX+pKcwHVl+ekef5aFZVpaJ5cXccJUnDhg+MXrLIRJvH9uSTB0K2aHN2ES4vJuH4AX/77I+qq+m2XulqhzZoiAqLiEvcXEh7EGh5+7jh5H21s7p6HZeITyQyhLSUCZRHiR6vagqL+iD8Uklc9obVkMeivcvMT7LmADF/PAULCiBqaUg3ubhZpTeJP1sdWpa4viV+4ujmooUvPXpH6n34pq0osoewp7DQsesKdyCXqLLSS7yBhM8FRgch3hVVlzF52TBXFTg3BeTUQ+TuK2anu0Lmveoh1nx3xSrOQwjdfVx1bDqgtXmf1+quTfFglNrBy9TzI4p3LrNKt9tRL1xkRJ/XJhP6mF7NVJ4Rl3Use6D9mm/o0NcBVNxkkaq4QJfffjSPOCAE/MeUr/eMZrcIyR1jVDowvbo4iQ6QXHCMFPaMmKF+GtMpj655OfxXqRV8557oFukQ77C2nte0eiaXYAQN2uw8+i5K55ty7dJjPtdoPeLVw1Q4zAySn4ARInq42VeFZo6auEChgXYC+vjsKuwkVR5KazIv8HEIRu8uYyNjuKsXhIB6W9N1SjJvP6BuoQCA7Wy0RS/LlnIHtyflP0SCLOMN5JcxBTnk1nX8WAcP5ZjgLQRZsX2Lo=
+  app: sp21-project-b-28
+  on:
+    repo: uva-cs3240-s21/project-b-28
+    branch: main

@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% endblock title %}
+
+{% block header %}
+{% csrf_token %}
+<div class="row">
+	<h1>{{ appuser.user.first_name }} {{ appuser.user.last_name}}</h1>
+</div>
+<div class="row">
+	<div class="col-6">
+		<h4>{{ appuser.user.email }}</h4>
+	</div>
+	{% if appuser.user != user %}
+	<div id="friend_button" class="col-6 text-right">
+		{% if friends %}
+			<button id="remove-friend" type="button" class="btn btn-outline-danger">Remove friend</button>
+		{% else %}
+			{% if request_sent %}
+			<button type="button" class="btn btn-primary" disabled>Friend request sent</button>
+			{% else %}
+			<button id="fren" type="button" class="btn btn-primary">Send friend request</button>
+			{% endif %}
+		{% endif %}
+	</div>
+	{% endif %}
+</div>
+{% endblock header %}
+
+{% block content %}
+<div class="row">
+	<div class="col">
+		<p class="">Age: {{ appuser.age }}</p>
+		<p class="">Points: {{ appuser.points }}</p>
+	</div>
+</div>
+
+{# Add recent exercises #}
+<div class="row">
+	<h3>Recent Exercises</h3>
+	<table class="table bg-white">
+		<thead class="thead-dark">
+			<tr>
+				<th style="width: 50%;" scope="col">Date</th>
+				<th class="text-center" style="width: 50%;" scope="col">Exercise</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for log in logs %}
+			<tr>
+				<td>{{ log.date }}</td>
+				<td>{{ log.exercise }}</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock content %}
+
+{% block js %}
+<script>
+	var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+	// https://stackoverflow.com/questions/13465711/how-do-i-post-with-jquery-ajax-in-django
+	$('#fren').click(function() {
+		// send friend request
+		$.ajax({
+			url: "{% url 'exercise_app:send_friend_request' %}",
+			type: 'POST',
+			headers: {
+				'X-CSRFToken': csrftoken
+			},
+			data: {
+				'pk': {{ appuser.pk }}
+			}
+		}).done(function() {
+			location.reload()
+		});
+	});
+
+	$('#remove-friend').click(function() {
+		// remove friend
+		$.ajax({
+			url: "{% url 'exercise_app:remove_friend' %}",
+			type: 'POST',
+			headers: {
+				'X-CSRFToken': csrftoken
+			},
+			data: {
+				'pk': {{ appuser.pk }}
+			}
+		}).done(function() {
+			location.reload()
+		});
+	});
+</script>
+{% endblock js %}

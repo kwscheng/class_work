@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}
+<title>Achievements</title>
+{% endblock title %}
+
+{% block header %}
+<div class="row">
+  <h1>Achievements</h1>
+</div>
+{% endblock header %}
+
+{% block content %}
+
+<div class="row">
+  {# earned achievements #}
+  <h3>Earned Achievements</h3>
+  <table class="table table-striped bg-white">
+    <thead class="thead-dark">
+      <tr>
+        <th style="width: 10%;" scope="col">Badge</th>
+        <th style="width: 10%;" scope="col">Exercise</th>
+        <th style="width: 20%;" scope="col">Name</th>
+        <th style="width: 50%;" scope="col">Description</th>
+        <th style="width: 10%;" scope="col">Points</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for a in user_achievements %}
+      <tr>
+
+        {% load static %}
+        <!-- Display the corresponding Image -->
+        <td> 
+        {% if a.exercise.name == "Running" %}
+          <img src="../../static/images/runningPic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% elif a.exercise.name == "Weight Lifting" %}
+          <img src="../../static/images/weightLiftingCirclePic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% elif a.exercise.name == "Cycling" %}
+          <img src="../../static/images/cyclePic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% elif a.exercise.name == "Volleyball" %}
+          <img src="../../static/images/volleyballPic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% elif a.exercise.name == "Swimming" %}
+          <img src="../../static/images/swimmingPic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% elif a.exercise.name == "Sprints" %}
+          <img src="../../static/images/runningPic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% elif a.exercise.name == "Walking" %}
+          <img src="../../static/images/runningPic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% elif a.exercise.name == "Yoga" %}
+          <img src="../../static/images/yogaPic2.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% elif a.exercise.name == "Deadlift" %}
+          <img src="../../static/images/deadliftPic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% elif a.exercise.name == "Squats" %}
+          <img src="../../static/images/squatPic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% else %}
+          <img src="../../static/images/customCirclePic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% endif %}
+        </td>
+
+        <td>{{ a.exercise }}</td>
+        <td>{{ a.name }}</td>
+        <td>{{ a.description }}</td>
+        <td>{{ a.points }}</td>
+      </tr>
+    {% endfor %}
+      <tr>
+        <td class="text-right" colspan="4">Total points:</td>
+        <td>{{ currentUser.points }}</td>
+      </tr>
+    </tbody>
+  </table> 
+  {# end earned achievements #}
+</div>
+
+<div class="row">
+  {# unearned achievements #}
+  <h3>Locked Achievements</h3>
+  <table class="table table-striped bg-white">
+    <thead class="thead-dark">
+      <tr>
+        <th style="width: 15%;" scope="col">Badge</th>
+        <th style="width: 15%;" scope="col">Exercise</th>
+        <th style="width: 15%;" scope="col">Name</th>
+        <th style="width: 70%;" scope="col">Description</th>
+        <th style="width: 10%;" scope="col">Points</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for a in unearned_achievements %}
+      <tr>
+
+        {% load static %}
+        <!-- Display the corresponding Image -->
+        <td> 
+        {% if a.exercise.name == "Running" %}
+          <img src="../../static/images/runningPic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% elif a.exercise.name == "Weight Lifting" %}
+          <img src="../../static/images/weightLiftingCirclePic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% elif a.exercise.name == "Cycling" %}
+          <img src="../../static/images/cyclePic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% elif a.exercise.name == "Volleyball" %}
+          <img src="../../static/images/volleyballPic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% elif a.exercise.name == "Swimming" %}
+          <img src="../../static/images/swimmingPic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% elif a.exercise.name == "Sprints" %}
+          <img src="../../static/images/runningPic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% elif a.exercise.name == "Walking" %}
+          <img src="../../static/images/runningPic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% elif a.exercise.name == "Yoga" %}
+          <img src="../../static/images/yogaPic2.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% elif a.exercise.name == "Deadlift" %}
+          <img src="../../static/images/deadliftPic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% elif a.exercise.name == "Squat" %}
+          <img src="../../static/images/squatPic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% else %}
+          <img src="../../static/images/customCirclePic.png" alt="Running" style="width:48px;height:48px;border-radius:27px;">
+        {% endif %}
+        </td>
+
+        <td>{{ a.exercise }}</td>
+        <td>{{ a.name }}</td>
+        <td>{{ a.description }}</td>
+        <td>{{ a.points }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table> 
+  {# end unearned achievements #}
+</div>
+{% endblock content %}

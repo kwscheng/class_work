@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+ 
+
+{% block title %}
+<title>Weather</title>
+{% endblock title %}
+
+
+{% block header %}
+<div class="row">
+	<h1>Enter in a city and check out the weather!</h1>
+</div>
+{% endblock header %}
+
+{% block content %} 
+<div class="row">
+    <div class="col d-flex justify-content-center">
+        <form class="form-inline" method="POST">
+            {% csrf_token %}
+            {{ form.name }}
+            <button type="submit" class="btn btn-primary" >Add City</button>
+        </form>
+    </div>
+</div>
+
+{% with weather_data|last as city_weather%}
+<div class="row">
+    <div class="col d-flex justify-content-center">
+
+        <div class="card m-2 py-3 w-50">
+            <figure class="image is-50x50">
+                <!-- <img src="http://openweathermap.org/img/w/{{ city_weather.icon }}.png" alt="Image"> -->
+            </figure>
+            <div class="text-center">
+                <h4><strong>{{ city_weather.city }}</strong></h4>
+                <h5>{{ city_weather.temperature }}° F</h5>
+                <p>{{ city_weather.description }}</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endwith %}
+
+{% endblock content %}
