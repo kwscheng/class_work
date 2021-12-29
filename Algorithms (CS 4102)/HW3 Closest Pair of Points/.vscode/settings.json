@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "__tuple": "cpp",
+        "tuple": "cpp",
+        "vector": "cpp",
+        "iosfwd": "cpp",
+        "iterator": "cpp",
+        "utility": "cpp",
+        "algorithm": "cpp",
+        "chrono": "cpp",
+        "limits": "cpp",
+        "iostream": "cpp",
+        "ostream": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
+}
